@@ -1,0 +1,2 @@
+"0","popular.ca = product %>% filter( Product.ID %in% c(11986, 10613, 10668, 10785, 11980, 10786, 10725, 10629, 10676, 14825))"
+"0","kable(popular.ca$Brand)"

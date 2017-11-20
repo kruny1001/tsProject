@@ -1,0 +1,3 @@
+"0","finalCust <- newCust %>% filter(country == ""United States"") %>% "
+"0","  filter( state %in% c(""CA"")) %>% select(custID)"
+"0","custList.ca = unlist(finalCust)"

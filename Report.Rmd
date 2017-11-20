@@ -1,0 +1,121 @@
+---
+title: "October 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(knitr)
+library(pander)
+## Extracting 
+library(dplyr)
+library(lubridate)
+Order <- setRefClass("Order",
+  fields = list(orgData = "ANY"),
+  methods = list(
+    readCSV = function(filePath){
+      orgData <<- read.csv(filePath, header=T, sep=",")
+      dates <- orgData %>%  select("Order.Date")
+      dates = na.omit(dates)
+      target = as.character(dates$Order.Date)
+      targetNew <- as.Date(target, format = "%m-%d-%Y")
+      
+      orgData$Order.Month <<- month(targetNew)
+      orgData$Order.Year <<- year(targetNew)
+      orgData$Order.Date <<- targetNew
+      
+      colnames(.self$orgData) <- c("orderId", "status", "date", "time", "total", 
+        "custID", "email", "prodDetail", "tranID", "month", "year")
+    },
+    extractMonth = function(month, year){
+      target = orgData %>% filter(month == 10 & year ==2017) %>%
+  filter(status == "Shipped" | status == "Partially Shipped" | status=="Awaiting Fulfillment") %>%
+        select(date, status, prodDetail, total) 
+      return (target)
+    },
+    extractYear = function(year){
+      target = orgData %>% 
+        filter(year ==year) %>%
+        filter(status != "Refunded" & status != "Declined" & status!="Disputed" ) %>%
+        select(date, status, prodDetail, total) 
+      return (target)
+    },
+    drawPlot = function(){
+    }
+  )  
+)
+
+OrderObj <- Order$new()
+OrderObj$readCSV("./orders-2017-11-11.csv")
+```
+
+#### Orders
+
+<section style="font-size:10px">
+
+```{r}
+D10 <- OrderObj$orgData %>% filter(month == 10 & year ==2017) %>%
+  filter(status == "Shipped" | status == "Partially Shipped" | status=="Awaiting Fulfillment") %>%
+        select(date, status, prodDetail, total) 
+
+D10$date = gsub("2017-","",D10$date)
+D10$prodDetail = gsub("Product ID:","",D10$prodDetail)
+kable(D10)
+```
+
+</section>
+
+```{r}
+total = sum(D10$total)
+```
+
+#### Total 
+
+$ 17399.22
+
+*** 
+
+#### Years Summary
+
+<section style="font-size:10px">
+
+```{r}
+library(tidyr)
+empty <- tibble()
+for(yearIdx in 2013:2017){
+  for(monthIdx in 1:12){
+    monthDetail = OrderObj$orgData %>%
+      filter(year == yearIdx & month==monthIdx)
+    if(nrow(monthDetail)>0) {
+      monthDetail = monthDetail%>%
+            group_by(month, status) %>%
+            summarise(sum=sum(total)) %>%
+            spread(status, sum)
+      earn = sum(monthDetail$`Awaiting Fulfillment`, 
+              monthDetail$`Completed`,monthDetail$`Partially Shipped`, 
+              monthDetail$`Shipped`, na.rm = TRUE)
+      loss = sum(monthDetail$`Cancelled`, monthDetail$`Disputed`, 
+              monthDetail$`Awaiting Payment`, monthDetail$`Declined`, 
+              monthDetail$`Refunded`, na.rm = TRUE)
+      monthDetail <- cbind(list(year=yearIdx), monthDetail, list("earn + "=earn, "lost -"=loss))
+      empty <- bind_rows(empty, monthDetail)
+    }
+  }  
+}
+
+
+empty[is.na(empty)] <- 0
+empty <- empty %>% arrange(desc(year), desc(month))
+
+kable(empty[,c(1, 2, 6, 7, 3 ,4, 5, 8, 9, 10, 11,12, 13, 14)])
+
+```
+
+</section>
+
+
+
+

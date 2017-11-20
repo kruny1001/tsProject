@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1509990706041.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "28|33|34|4|\n35|26|37|4|\n",
+    "hash" : "0",
+    "id" : "8E012938",
+    "lastKnownWriteTime" : 1511135960,
+    "last_content_update" : 1511135960727,
+    "path" : "~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentation/analytics.R",
+    "project_path" : "analytics.R",
+    "properties" : {
+        "cursorPosition" : "84,23",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,3 @@
+"0","# finalPrd <- product %>% select(Product.ID, Brand, Calculated.Price)"
+"0","# kable(summary.data.frame(finalPrd))"
+"0","# pandoc.table(summary.data.frame(finalPrd))"

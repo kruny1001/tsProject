@@ -1,0 +1,4 @@
+"0","# finalOrd <- orders %>% select(Order.ID, Order.Status, Order.Date, Order.Total..inc.tax., Customer.ID)"
+"0","# kable(summary.data.frame(finalOrd))"
+"0","# "
+"0","# pandoc.table(summary.data.frame(finalOrd), split.table = Inf)"
