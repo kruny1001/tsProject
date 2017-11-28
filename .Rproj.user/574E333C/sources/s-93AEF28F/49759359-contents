@@ -293,13 +293,10 @@ analytics = data.frame(
 
 plot(analytics$adClicks) # Number of visits
 plot(analytics$adCost)   # Cost 
-install.packages("googlesheets")
-library(googlesheets)
-my_sheets <- gs_ls()
-my_sheets %>% glimpse()
-gs_gap() %>% 
-  gs_copy(to = "Gapminder")
-gs_ls("Gapminder")
+
+
+write.csv(analytics, file = "ga.csv")
+
 ```
 
 
