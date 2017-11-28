@@ -1,3 +1,0 @@
-"0","# finalCust <- customer %>% select(Customer.ID, Addresses)"
-"0","# kable(summary.data.frame(finalCust))"
-"0","# pandoc.table(summary.data.frame(finalCust))"

@@ -1,5 +1,0 @@
-"0","knitr::opts_chunk$set(echo = FALSE, warning = FALSE)"
-"0","library(knitr)"
-"0","library(dplyr)"
-"0","library(pander)"
-"0","# https://www.researchgate.net/publication/228150296_A_Time-Series_Analysis_of_US_E-Commerce_Sales"

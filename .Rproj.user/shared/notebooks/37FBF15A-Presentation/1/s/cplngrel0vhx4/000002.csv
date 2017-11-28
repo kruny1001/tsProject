@@ -1,8 +1,0 @@
-"0","# numPrd <- nrow(product)"
-"0","# numCust <- nrow(customer)"
-"0","# numOrd <- nrow(orders)"
-"0","# df <- data.frame(numPrd, numCust, numOrd)"
-"0","# colnames(df) <- c(""Products"", ""Customers"", ""Orders"")"
-"0","# rownames(df) <- c(""Total Number of Records"")"
-"0","# kable(df)"
-"0","# pandoc.table(df)"

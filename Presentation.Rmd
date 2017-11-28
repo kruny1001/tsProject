@@ -7,6 +7,10 @@ output:
     css: ../style.css
 ---
 
+https://www.tatvic.com/blog/forecasting-the-number-of-visitors-on-your-website-using-r-part-ii/
+https://rpubs.com/FelipeRego/TimeSeriesGoogleAnalyticsData
+https://www.lunametrics.com/blog/2017/09/26/identifying-trends-time-ga-data/
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(knitr)
@@ -148,13 +152,19 @@ kable(finalCust)
 finalCust <- newCust %>% filter(country == "United States") %>% 
   filter( state %in% c("CA")) %>% select(custID)
 custList.ca = unlist(finalCust)
-
 ```
 
 
 ```{r}
 orders$Product.Details <- gsub("Product ID: ", "", orders$Product.Details)
 order.ca <- orders %>% filter (Customer.ID %in% custList.ca)
+
+freqCust <- order.ca %>% group_by(Customer.ID) %>% 
+  count(Customer.ID) %>% arrange(desc(n))
+targetCust <- freqCust$Customer.ID[1]
+newCust %>% filter(custID == targetCust)
+
+
 s <- strsplit(order.ca$Product.Details,"\\|")
 order.ca.prd = data.frame(custID = rep(order.ca$Customer.ID, sapply(s, length)), 
   date = rep(order.ca$Order.Date, sapply(s, length)), 
@@ -187,6 +197,7 @@ order.ca.prd$date = as.Date(order.ca.prd$date, "%m-%d-%Y")
 normOrder <- order.ca.prd %>% mutate(dateAll = paste(date, time, sep=" "))
 
 normOrder$dateAll = as.POSIXct(as.Date(normOrder$dateAll))
+
 
 drawplot <- function(prdID.target){
   freq = normOrder   %>% mutate(freq=1)
@@ -224,6 +235,65 @@ If we can read a trend of current style we may can list more relative product un
 
 
 
+
+```{r}
+# library(devtools)
+# install_github("rga", "skardhamar")
+library(rga)
+rga.open(instance="ga", where="ga.rga1")
+ga
+```
+
+ga:timeOnScreen 0 
+
+```{r}
+start_date <- "2017-11-01"
+end_date <- "2017-11-27"
+metrics <- "ga:users,ga:adClicks,ga:adCost,ga:goalConversionRateAll"
+sort <- "ga:date"
+```
+
+
+```{r}
+src <- ga$getData(
+    "ga:24319051",
+    start.date = start_date,
+    end.date = end_date,
+    metrics = metrics,
+    sort = "",
+    batch = TRUE
+)
+
+
+src2 <- ga$getData(
+  "ga:24319051",
+  start.date = start_date,
+  end.date = end_date,
+  dimensions = "ga:date",
+  metrics = "ga:transactions,ga:transactionRevenue",
+  # segment = "users::sequence::^ga:userType==New%20Visitor;dateOfSession<>2017-11-01_2017-11-07;ga:campaign==Campaign%20A;->>perSession::ga:transactions>0",
+  # max.results = 100,
+  sort = "ga:date"
+)
+nrow(src2)
+plot(src2$transactions)
+plot(src2$transactionRevenue)
+
+
+analytics = data.frame(
+  date = src$date,
+  users = src$users,
+  adClicks = src$adClicks,
+  adCost = src$adCost,
+  # timeOnScreen = src$timeOnScreen,
+  goalConversionRateAll =  src$goalConversionRateAll
+)
+
+plot(analytics$adClicks) # Number of visits
+plot(analytics$adCost)   # Cost 
+
+
+```
 
 
 
