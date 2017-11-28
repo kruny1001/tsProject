@@ -130,10 +130,8 @@ Merely 4 years old in the U.S. market, e-commerce sales continue to grow on an a
 <section style="font-size: 10px">
 
 ```{r}
-
 # finalCust <- customer %>% select(Customer.ID, Addresses)
 # kable(summary.data.frame(finalCust))
-
 # pandoc.table(summary.data.frame(finalCust))
 ```
 
@@ -247,7 +245,7 @@ ga
 ga:timeOnScreen 0 
 
 ```{r}
-start_date <- "2014-11-01"
+start_date <- "2017-05-01"
 end_date <- "2017-11-27"
 metrics <- "ga:users,ga:adClicks,ga:adCost,ga:goalConversionRateAll"
 sort <- "ga:date"
@@ -281,7 +279,6 @@ nrow(src2)
 plot(src2)
 plot(src2$transactionRevenue)
 
-
 analytics = data.frame(
   date = src$date,
   users = src$users,
@@ -294,9 +291,20 @@ analytics = data.frame(
 plot(analytics$adClicks) # Number of visits
 plot(analytics$adCost)   # Cost 
 
-
 write.csv(analytics, file = "ga1.csv", row.names = FALSE)
+data <- read.csv(url("https://raw.githubusercontent.com/kruny1001/tsProject/master/ga1.csv"))
 
+plot(data$users)
+plot(data$adClicks)
+plot(data$adCost)
+plot(data$goalConversionRateAll)
+
+completeData <- data %>% filter(users > 0)
+nrow(completeData)
+plot.ts(completeData$users)
+plot.ts(completeData$adClicks)
+plot.ts(completeData$adCost)
+plot.ts(completeData$goalConversionRateAll)
 ```
 
 

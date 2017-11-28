@@ -47,7 +47,6 @@ Order <- setRefClass("Order",
     }
   )  
 )
-
 OrderObj <- Order$new()
 OrderObj$readCSV("./orders-2017-11-11.csv")
 ```
@@ -60,7 +59,6 @@ OrderObj$readCSV("./orders-2017-11-11.csv")
 D10 <- OrderObj$orgData %>% filter(month == 10 & year ==2017) %>%
   filter(status == "Shipped" | status == "Partially Shipped" | status=="Awaiting Fulfillment") %>%
         select(date, status, prodDetail, total) 
-
 D10$date = gsub("2017-","",D10$date)
 D10$prodDetail = gsub("Product ID:","",D10$prodDetail)
 kable(D10)
@@ -105,7 +103,6 @@ for(yearIdx in 2013:2017){
     }
   }  
 }
-
 
 empty[is.na(empty)] <- 0
 empty <- empty %>% arrange(desc(year), desc(month))
