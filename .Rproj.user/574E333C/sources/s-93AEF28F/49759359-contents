@@ -295,7 +295,7 @@ plot(analytics$adClicks) # Number of visits
 plot(analytics$adCost)   # Cost 
 
 
-write.csv(analytics, file = "ga.csv")
+write.csv(analytics, file = "ga.csv", row.names = FALSE)
 
 ```
 

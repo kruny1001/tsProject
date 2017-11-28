@@ -247,7 +247,7 @@ ga
 ga:timeOnScreen 0 
 
 ```{r}
-start_date <- "2017-11-01"
+start_date <- "2014-11-01"
 end_date <- "2017-11-27"
 metrics <- "ga:users,ga:adClicks,ga:adCost,ga:goalConversionRateAll"
 sort <- "ga:date"
@@ -270,13 +270,15 @@ src2 <- ga$getData(
   start.date = start_date,
   end.date = end_date,
   dimensions = "ga:date",
-  metrics = "ga:transactions,ga:transactionRevenue",
+  metrics = "ga:sessions",
+  batch = TRUE,
   # segment = "users::sequence::^ga:userType==New%20Visitor;dateOfSession<>2017-11-01_2017-11-07;ga:campaign==Campaign%20A;->>perSession::ga:transactions>0",
   # max.results = 100,
   sort = "ga:date"
 )
+
 nrow(src2)
-plot(src2$transactions)
+plot(src2)
 plot(src2$transactionRevenue)
 
 
@@ -292,6 +294,8 @@ analytics = data.frame(
 plot(analytics$adClicks) # Number of visits
 plot(analytics$adCost)   # Cost 
 
+
+write.csv(analytics, file = "ga.csv", row.names = FALSE)
 
 ```
 
