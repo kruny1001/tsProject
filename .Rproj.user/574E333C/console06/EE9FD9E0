@@ -80,3 +80,20 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 ]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationlizabeth-pc:Presentation kruny10011$ [K[Alizabeth-pc:Presentation kruny1001$ open .
 ]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationlizabeth-pc:Presentation kruny1001$ 
+HEAD is now at 57cdbeb aa
+]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationlizabeth-pc:Presentation kruny1001$ git add .
+]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationlizabeth-pc:Presentation kruny1001$ git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+	[32mmodified:   .Rproj.user/574E333C/console06/EE9FD9E0[m
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mmodified:   .Rproj.user/574E333C/console06/EE9FD9E0[m
+
+]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationlizabeth-pc:Presentation kruny1001$ 
