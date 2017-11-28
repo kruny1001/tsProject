@@ -148,7 +148,7 @@ kable(finalCust)
 
 ```{r}
 finalCust <- newCust %>% filter(country == "United States") %>% 
-  filter( state %in% c("CA")) %>% select(custID)
+  filter( state %in% c("SD")) %>% select(custID)
 custList.ca = unlist(finalCust)
 ```
 
@@ -245,7 +245,7 @@ ga
 ga:timeOnScreen 0 
 
 ```{r}
-start_date <- "2017-05-01"
+start_date <- "2014-05-01"
 end_date <- "2017-11-27"
 metrics <- "ga:users,ga:adClicks,ga:adCost,ga:goalConversionRateAll"
 sort <- "ga:date"
@@ -263,22 +263,6 @@ src <- ga$getData(
 )
 
 
-src2 <- ga$getData(
-  "ga:24319051",
-  start.date = start_date,
-  end.date = end_date,
-  dimensions = "ga:date",
-  metrics = "ga:sessions",
-  batch = TRUE,
-  # segment = "users::sequence::^ga:userType==New%20Visitor;dateOfSession<>2017-11-01_2017-11-07;ga:campaign==Campaign%20A;->>perSession::ga:transactions>0",
-  # max.results = 100,
-  sort = "ga:date"
-)
-
-nrow(src2)
-plot(src2)
-plot(src2$transactionRevenue)
-
 analytics = data.frame(
   date = src$date,
   users = src$users,
@@ -288,23 +272,40 @@ analytics = data.frame(
   goalConversionRateAll =  src$goalConversionRateAll
 )
 
-plot(analytics$adClicks) # Number of visits
-plot(analytics$adCost)   # Cost 
 
-write.csv(analytics, file = "ga1.csv", row.names = FALSE)
+write.csv(final, file = "ga1.csv", row.names = FALSE)
 data <- read.csv(url("https://raw.githubusercontent.com/kruny1001/tsProject/master/ga1.csv"))
+nrow(data)
 
 plot(data$users)
 plot(data$adClicks)
 plot(data$adCost)
 plot(data$goalConversionRateAll)
 
+plot(completeData$adClicks)
+
+
+
+summary(analytics)
+
+final <- analytics %>% filter(users > 80, adClicks > 80, adCost > 3)
+nrow(final)
 completeData <- data %>% filter(users > 0)
-nrow(completeData)
-plot.ts(completeData$users)
-plot.ts(completeData$adClicks)
-plot.ts(completeData$adCost)
+completeData <- data %>% filter(users > 0)
+
+
+
+
 plot.ts(completeData$goalConversionRateAll)
+```
+
+
+```{r fig.width=10, fig.width=10}
+par(mfrow=c(3,1)) 
+plot.ts(final$adClicks, main="AD Clicks")
+plot.ts(final$adCost, main="AD Cost")
+plot.ts(final$users, main="Users")
+final %>% filter(users > 1300)
 ```
 
 

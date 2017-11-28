@@ -40,9 +40,12 @@ Order <- setRefClass("Order",
 )
 
 
-orderData <- read.csv("./orders-2017-11-06.csv")
+orderData <- read.csv("./orders-2017-11-19-2.csv")
+nrow(orderData)
+length(colnames(orderData))
 colnames(orderData) <- c("orderId", "status", "date", "time", "total", 
-  "custID", "email", "prodDetail", "tranID")
+  "custID", "prodDetail", "tranID")
+orderData$date = gsub("/","-", orderData$date)
 orderData$date = as.Date(orderData$date, "%m-%d-%Y")
 normOrder <- orderData %>% mutate(dateAll = paste(date, time, sep=" "))
 normOrder$dateAll = as.POSIXlt.character(normOrder$dateAll)
@@ -51,17 +54,18 @@ library(xts)
 library(lubridate)
 
 
-data(sample_matrix)
-sample.xts <- as.xts(sample_matrix)
-
-
 newNorm <- normOrder %>% select(total, dateAll)
 newNorm$total <- as.numeric(newNorm$total)
 ts <- xts(newNorm$total, order.by=newNorm$dateAll)
 yearly <- to.yearly(ts)
+daily <- to.daily(ts)
 monthly <- to.monthly(ts)
 quarterly <- to.quarterly(ts)
 period <- to.period(ts,period="years")
+
+dd = ts(quarterly[,1])
+plot(daily[,2])
+plot(monthly[,2])
 
 plot(monthly, main="Time Series monthly")
 plot(quarterly, main="Time Series quarterly")
@@ -76,16 +80,39 @@ y2017.01 <- ts["2017-01"]
 y2017.02 <- ts["2017-02"]
 y2017.03 <- ts["2017-03"]
 y2017.04 <- ts["2017-04"]
+y2017.05 <- ts["2017"]
 
+test <- to.daily(ts["2017"])
+plot(daily[,4])
 plot(y2017.01)
 plot(y2017.02)
 plot(y2017.03)
-plot(y2017.04)
+plot(y2017.05)
 
-plot(ts["2017-04-01"], 
+plot(ts["2017-04"], 
   type='l',
-  xlim=as.POSIXct(c("2017-04-01 00:00:00","2012-04-02 00:00:00"))
+  xlim=as.POSIXct(c("2017-04-01 00:00:00","2017-04-30 00:00:00"))
 )
+plot(ts["2017-05"], 
+  type='l',
+  xlim=as.POSIXct(c("2017-05-01 00:00:00","2017-05-31 00:00:00"))
+)
+plot(ts["2017-06"], 
+  type='l',
+  xlim=as.POSIXct(c("2017-06-01 00:00:00","2017-06-30 00:00:00"))
+)
+plot(ts["2017-07"], 
+  type='l',
+  xlim=as.POSIXct(c("2017-06-01 00:00:00","2017-06-30 00:00:00"))
+)
+plot(ts["2017-08"], 
+  type='l',
+  xlim=as.POSIXct(c("2017-06-01 00:00:00","2017-06-30 00:00:00"))
+)
+
+
+
+
 
 # plot a subset of the data
 plot(ts, subset="2014-04-01/2014-04-02")
@@ -262,4 +289,30 @@ sum(MonthlyTotal2014)
 sum(MonthlyTotal2015)
 sum(MonthlyTotal2016)
 sum(MonthlyTotal2017)
+ddd = ts["201601"]
 
+par(mfrow=c(3,4)) 
+plot(table(.indexhour(ts["201601"])))
+plot(table(.indexhour(ts["201602"])))
+plot(table(.indexhour(ts["201603"])))
+plot(table(.indexhour(ts["201604"])))
+plot(table(.indexhour(ts["201605"])))
+plot(table(.indexhour(ts["201606"])))
+plot(table(.indexhour(ts["201607"])))
+plot(table(.indexhour(ts["201608"])))
+plot(table(.indexhour(ts["201609"])))
+plot(table(.indexhour(ts["201610"])))
+plot(table(.indexhour(ts["201611"])))
+plot(table(.indexhour(ts["201612"])))
+
+
+
+
+plot(table(.indexwday(ts["2015"])), ylim=c(0,700))
+plot(table(.indexwday(ts["2016"])), ylim=c(0,700))
+plot(table(.indexwday(ts["2017"])), ylim=c(0,700))
+
+head(ddd)
+head(to.daily(ddd) )
+to.daily(ts["2014-5"])
+.indexwday(ts["2014-5"])
