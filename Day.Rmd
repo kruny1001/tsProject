@@ -170,6 +170,7 @@ analytics = data.frame(
 ```
 
 
+
 ```{r}
 Sys.setenv(TZ = "UTC")
 
@@ -233,9 +234,40 @@ startYear = 2015
 fit1 <- arima(salesM , order=c(0,1,0))
 fit1
 
+jpeg('q4.acf.jpg',  width = 1280, height = 780)
+par(mfrow=c(2,2))
+Acf(revenue, lag.max=25, main="Quaterly Rev ACF")
+Pacf(revenue, lag.max=25, main="Quaterly Rev PACF")
+Acf(diff(revenue[,1])[-1], lag.max=25, main="First Difference quaterly Rev")
+Pacf(diff(revenue[,1])[-1], lag.max=25, main="First Difference quaterly Rev")
+dev.off()
+
+
+jpeg('mo.acf.jpg',  width = 1280, height = 780)
+par(mfrow=c(2,2))
+Acf(salesM, lag.max=25, main="Monthly Rev ACF")
+Pacf(salesM, lag.max=25, main="Monthly Rev PACF")
+Acf(diff(salesM[,1])[-1], lag.max=25, main="First Difference Monthly Rev")
+Pacf(diff(salesM[,1])[-1], lag.max=25, main="First Difference Monthly Rev")
+dev.off()
+
+
+jpeg('day.acf.jpg',  width = 1280, height = 780)
+par(mfrow=c(2,2))
+Acf(salesD, lag.max=25, main="Daily Rev ACF")
+Pacf(salesD, lag.max=25, main="Daily Rev ACF")
+Acf(diff(salesD[,1])[-1], lag.max=25, main="First Difference Daily Rev")
+Pacf(diff(salesD[,1])[-1], lag.max=25, main="First Difference Daily Rev")
+dev.off()
+
+```
+
+
+```{r}
+
 startYear = 2014
-auto5 <- auto.arima(revenue, seasonal=F, d=1, allowdrift=T, stepwise=F, approximation=F)
-auto5.S <- auto.arima(revenue, seasonal=T, d=1, allowdrift=T, stepwise=F, approximation=F)
+auto5 <- auto.arima(revenue, seasonal=F, allowdrift=T, stepwise=F, approximation=F)
+auto5.S <- auto.arima(revenue, seasonal=T, d=1, allowdrift=T, stepwise=T, approximation=F)
 auto5
 auto5.S
 
@@ -245,11 +277,12 @@ flower.95 = ts(fcast1$lower[,2], start=c(2018), frequency=4)
 fupper.95 = ts(fcast1$upper[,2], start=c(2018), frequency=4)
 meanf = ts(fcast1$mean, start=c(2018), frequency=4)
 
-plot.ts(salesM.ts, type="o",  main="Forcast next 4 quarters Non Seasonal", ylab="Revenue", ylim=c(0,45000), xlim=c(2014, 2019))
+jpeg('forecast.q.jpg',  width = 1280, height = 780)
+plot.ts(salesM.ts, type="o",  main="Forcast next 4 quarters [2,1,0]", ylab="Revenue", ylim=c(0,45000), xlim=c(2014, 2019))
 lines(meanf, col="darkgreen", lwd = 2, type="o" )
 lines(flower.95, col="blue", lwd = 2, type="o" )
 lines(fupper.95, col="red", lwd = 2, type="o" )
-
+dev.off()
 
 fcast1 <- forecast(auto5.S, h=4)
 salesM.ts = ts(revenue, start=c(startYear,1), frequency =4)
@@ -257,21 +290,12 @@ flower.95 = ts(fcast1$lower[,2], start=c(2018), frequency=4)
 fupper.95 = ts(fcast1$upper[,2], start=c(2018), frequency=4)
 meanf = ts(fcast1$mean, start=c(2018), frequency=4)
 
-plot.ts(salesM.ts, type="o",  main="Forcast next 4 quarters Seasonal", ylab="Revenue", ylim=c(0,45000), xlim=c(2014, 2019))
+jpeg('forecast.q2.jpg',  width = 1280, height = 780)
+plot.ts(salesM.ts, type="o",  main="Forcast next 4 quarters Seasonal (0,1,0)(1,0,0)[4] ", ylab="Revenue", ylim=c(0,45000), xlim=c(2014, 2019))
 lines(meanf, col="darkgreen", lwd = 2, type="o" )
 lines(flower.95, col="blue", lwd = 2, type="o" )
 lines(fupper.95, col="red", lwd = 2, type="o" )
-
-fcast1 <- forecast(auto5.S, h=5)
-salesM.ts = ts(salesM, start=c(startYear,1), frequency =12)
-flower.95 = ts(fcast1$lower[,2], start=c(2017,11), frequency=12)
-fupper.95 = ts(fcast1$upper[,2], start=c(2017,11), frequency=12)
-meanf = ts(fcast1$mean, start=c(2017,11), frequency=12)
-
-plot.ts(salesM.ts, type="o",  main="Forcast next 5 Month", ylab="Revenue", ylim=c(0,45000), xlim=c(2015, 2018.5))
-lines(meanf, col="darkgreen", lwd = 2, type="o" )
-lines(flower.95, col="blue", lwd = 2, type="o" )
-lines(fupper.95, col="red", lwd = 2, type="o" )
+dev.off()
 
 ```
 
@@ -283,11 +307,13 @@ days = c("2017-08-05", "2017-08-12", "2017-08-19", "2017-08-26","2017-09-02","20
   "2017-11-4", "2017-11-11", "2017-11-18")
 length(days)
 
+jpeg('wday.jpg',  width = 1280, height = 780)
 ep.2017 <- endpoints(ts["2017-08/2017-11"],'days')
 daymeans.2017 <- period.apply(ts["2017-08/2017-11"], INDEX=ep.2017, FUN=sum, na.rm=F)
 events <- xts(1:16, as.Date(days))
 plot(daymeans.2017, main="Saturday Highlight")
 addEventLines(events, srt=90, pos=2, col="red")  
+dev.off()
 
 auto.arima(daymeans.2017)
 fit1 <- arima(daymeans.2017 , order=c(0,1,0))
@@ -301,7 +327,6 @@ plot.ts(salesM.ts, type="o",  main="Forcast next 5 Month", ylab="Revenue", ylim=
 lines(meanf, col="darkgreen", lwd = 2, type="o" )
 lines(flower.95, col="blue", lwd = 2, type="o" )
 lines(fupper.95, col="red", lwd = 2, type="o" )
-
 ```
 
 
