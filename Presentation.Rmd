@@ -15,7 +15,7 @@ https://www.lunametrics.com/blog/2017/09/26/identifying-trends-time-ga-data/
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(knitr)
 library(dplyr)
-library(pander)
+# library(pander)
 # https://www.researchgate.net/publication/228150296_A_Time-Series_Analysis_of_US_E-Commerce_Sales
 ```
 
@@ -272,17 +272,15 @@ analytics = data.frame(
   goalConversionRateAll =  src$goalConversionRateAll
 )
 
+new
+write.csv(new, file = "ga2.csv", row.names = FALSE)
+data <- read.csv(url("https://raw.githubusercontent.com/kruny1001/tsProject/master/ga2.csv"))
 
-write.csv(final, file = "ga1.csv", row.names = FALSE)
-data <- read.csv(url("https://raw.githubusercontent.com/kruny1001/tsProject/master/ga1.csv"))
-nrow(data)
 
 plot(data$users)
 plot(data$adClicks)
 plot(data$adCost)
-plot(data$goalConversionRateAll)
-
-plot(completeData$adClicks)
+plot(data$revenue)
 
 
 
@@ -293,7 +291,9 @@ nrow(final)
 completeData <- data %>% filter(users > 0)
 completeData <- data %>% filter(users > 0)
 
-plot.ts(completeData$goalConversionRateAll)
+plot.ts(data$adClicks)
+data$adCost
+
 ```
 
 

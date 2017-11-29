@@ -13,10 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 https://earlconf.com/downloads/sanfrancisco/presentations/earl2017_-_new_tools_for_performing_financial_and_time_series_analysis_-_matt_dancho.pdf
 
 ```{r}
-install.packages("tidyquant")
-install.packages("cranlogs")
+# install.packages("tidyquant")
+# install.packages("cranlogs")
 library(tidyquant)
-library(tsfeatures)
 library(tidyverse)
 library(forecast)
 ```
@@ -58,6 +57,8 @@ tidyverse_downloads %>%
 ```{r fig.width=10}
 
 data2016 = ts["2016/2017"]
+
+
 date = index(data2016)
 hour = .indexhour(data2016)
 day = .indexwday(data2016)
@@ -170,19 +171,87 @@ analytics = data.frame(
 
 
 ```{r}
-tail(ts["2015-12-24"])
-ep.2015 <- endpoints(ts["2015"],'days')
+Sys.setenv(TZ = "UTC")
+
+ep.2014 <- endpoints(ts["2014"],'months')
+daymeans.2014 <- period.apply(ts["2014"], INDEX=ep.2014, FUN=sum, na.rm=TRUE)
+tail(daymeans.2014)
+
+ep.2015 <- endpoints(ts["2015"],'months')
 daymeans.2015 <- period.apply(ts["2015"], INDEX=ep.2015, FUN=sum, na.rm=TRUE)
 tail(daymeans.2015)
 
-
-ep.2016 <- endpoints(ts["2016"],'days')
+ep.2016 <- endpoints(ts["2016"],'months')
 daymeans.2016 <- period.apply(ts["2016"], INDEX=ep.2016, FUN=sum, na.rm=F)
 nrow(daymeans.2016)
 
-ep.2017 <- endpoints(ts["2017-01-01/2017"],'days')
+ep.2017 <- endpoints(ts["2017-01-01/2017-11"],'months')
 daymeans.2017 <- period.apply(ts["2017-01-01/2017"], INDEX=ep.2017, FUN=sum, na.rm=F)
 nrow(daymeans.2017)
+salesM = NULL
+salesM =  rbind(salesM, daymeans.2015)
+salesM =  rbind(salesM, daymeans.2016)
+salesM =  rbind(salesM, daymeans.2017[1:10])
+
+salesQ = NULL
+salesQ = rbind(salesQ, to.quarterly(daymeans.2014))
+salesQ = rbind(salesQ, to.quarterly(daymeans.2015))
+salesQ = rbind(salesQ, to.quarterly(daymeans.2016))
+salesQ = rbind(salesQ, to.quarterly(daymeans.2017))
+
+revenue = salesQ$daymeans.2014.Open
+date = rownames(salesQ)
+plot(salesM)
+acf(salesM.ts)
+acf(diff(salesM.ts))
+pacf(salesM.ts)
+pacf(diff(salesM.ts))
+
+auto.arima(salesM.ts, stepwise=TRUE)
+startYear = 2015
+fit1 <- arima(salesM , order=c(0,1,0))
+fit1
+
+fcast1 <- forecast(fit1, h=5)
+salesM.ts = ts(salesM, start=c(startYear,1), frequency =12)
+flower.95 = ts(fcast1$lower[,2], start=c(2017,11), frequency=12)
+fupper.95 = ts(fcast1$upper[,2], start=c(2017,11), frequency=12)
+meanf = ts(fcast1$mean, start=c(2017,11), frequency=12)
+
+plot.ts(salesM.ts, type="o",  main="Forcast next 5 Month", ylab="Revenue", ylim=c(0,45000), xlim=c(2015, 2018.5))
+lines(meanf, col="darkgreen", lwd = 2, type="o" )
+lines(flower.95, col="blue", lwd = 2, type="o" )
+lines(fupper.95, col="red", lwd = 2, type="o" )
+
+```
+
+
+```{r fig.width=10}
+
+days = c("2017-08-05", "2017-08-12", "2017-08-19", "2017-08-26","2017-09-02","2017-09-09","2017-09-16","2017-09-23","2017-09-30", 
+  "2017-10-07","2017-10-14","2017-10-21","2017-10-28",
+  "2017-11-4", "2017-11-11", "2017-11-18")
+length(days)
+
+ep.2017 <- endpoints(ts["2017-08/2017-11"],'days')
+daymeans.2017 <- period.apply(ts["2017-08/2017-11"], INDEX=ep.2017, FUN=sum, na.rm=F)
+events <- xts(1:16, as.Date(days))
+plot(daymeans.2017, main="Saturday Highlight")
+addEventLines(events, srt=90, pos=2, col="red")  
+
+auto.arima(daymeans.2017)
+fit1 <- arima(daymeans.2017 , order=c(0,1,0))
+fcast1 <- forecast(fit1, h=5)
+salesM.ts = ts(daymeans.2017, start=c(startYear,1), frequency =12)
+flower.95 = ts(fcast1$lower[,2], start=c(2017,11), frequency=12)
+fupper.95 = ts(fcast1$upper[,2], start=c(2017,11), frequency=12)
+meanf = ts(fcast1$mean, start=c(2017,11), frequency=12)
+
+plot.ts(salesM.ts, type="o",  main="Forcast next 5 Month", ylab="Revenue", ylim=c(0,45000), xlim=c(2015, 2018.5))
+lines(meanf, col="darkgreen", lwd = 2, type="o" )
+lines(flower.95, col="blue", lwd = 2, type="o" )
+lines(fupper.95, col="red", lwd = 2, type="o" )
+
 ```
 
 
@@ -195,39 +264,130 @@ tail(merged.2015)
 
 xts.2016 <- xts(x = sessionInfo.2016, order.by = sessionInfo.2016$date)
 merged.2016 = merge(xts.2016, daymeans.2016,join = "inner")
+nrow(merged.2016)
+tail(merged.2016)
+
+xts.2017 <- xts(x = sessionInfo.2017, order.by = sessionInfo.2017$date)
+merged.2017 = merge(xts.2017, daymeans.2017,join = "inner")
+nrow(merged.2017)
+tail(merged.2017)
+
+colnames(merged.2015) = c("date",  "users" ,"sessions" ,"adClicks", "adCost", "revenue")
+colnames(merged.2016) = c("date",  "users" ,"sessions" ,"adClicks", "adCost", "revenue")
+colnames(merged.2017) = c("date",  "users" ,"sessions" ,"adClicks", "adCost", "revenue")
+
+total = data.frame()
+total <- rbind(total, merged.2015)
+total <- rbind(total, merged.2016)
+total <- rbind(total, merged.2017)
+
+new.2015 = as.data.frame(merged.2015)
+new.2015 = new.2015 %>% mutate(adClicks = ifelse(adClicks==0, mean(adClicks), adClicks))
+new.2015 = new.2015 %>% mutate(adCost = ifelse(adCost==0, mean(adCost), adCost))
+
+new.2016 = as.data.frame(merged.2016)
+new.2016 = new.2016 %>% mutate(adClicks = ifelse(adClicks==0, mean(adClicks), adClicks))
+new.2016 = new.2016 %>% mutate(adCost = ifelse(adCost==0, mean(adCost), adCost))
 
 
-sessionInfo.2015$revenue = daymeans.2015
-sessionInfo.2015$wday = .indexwday(daymeans.2015) 
-sessionInfo.2016$revenue = daymeans.2016
-sessionInfo.2016$wday = .indexwday(daymeans.2016) 
-sessionInfo.2017$revenue = daymeans.2017
-sessionInfo.2017$wday = .indexwday(daymeans.2017) 
+new.2017 = as.data.frame(merged.2017)
+new.2017 = new.2017 %>% mutate(adClicks = ifelse(adClicks==0, mean(adClicks), adClicks))
+new.2017 = new.2017 %>% mutate(adCost = ifelse(adCost==0, mean(adCost), adCost))
 
+
+total = NULL
+total = rbind(new.2015, new.2016)
+total = rbind(total, new.2017)
+nrow(total)
+summary(total)
+
+dd = as.data.frame(total) %>% select(users, sessions, adClicks, adCost, revenue)
+summary(dd)
 
 par(mfrow=c(2,2)) 
-plot.ts(sessionInfo.2015$revenue)
-plot.ts(sessionInfo.2015$adCost)
-plot.ts(sessionInfo.2015$adClicks)
-plot.ts(sessionInfo.2015$sessions)
+plot.ts(dd$revenue)
+plot.ts(dd$adCost)
+plot.ts(dd$adClicks)
+plot.ts(dd$sessions)
+plot.ts(dd$users)
 
 
-par(mfrow=c(3,1)) 
-plot.ts(sessionInfo.2017$revenue)
-plot.ts(sessionInfo.2017$adCost)
-plot.ts(sessionInfo.2017$adClicks)
-plot.ts(sessionInfo.2017$sessions)
+write.csv(dd, file = "ga2.csv", row.names = FALSE)
+data <- read.csv(url("https://raw.githubusercontent.com/kruny1001/tsProject/master/ga2.csv"))
 
-# Dicrect Visitor 
-plot(sessionInfo.2017$sessions- sessionInfo.2017$adClicks)
+drawPlot <- function (new){
+  par(mfrow=c(3,1)) 
+  plot.ts(new$revenue)
+  plot.ts(new$adCost)
+  plot.ts(new$adClicks)  
+}
+
+```
+
+```{r}
+
+plot.ts(log(data$revenue))
 
 ```
 
 
-```{r, fit.width=10}
-par(mfrow=c(2,2)) 
-plot.ts(analytics$users, cex=.6, main="users")
-plot.ts(analytics$adClicks, cex=.6)
-plot.ts(analytics$adCost, cex=.6)
+
+```{r, fig.width=10, fig.height=10}
+drawPlot()
 ```
+
+
+```{r}
+tornadoes <- c(100,50,100,80,70,80,90,200,140,20,30,50,100,70,90,200,120,100,60,70,110,40,80,100,110,110,210)
+tornadoes12=c(matrix(data=tornadoes,ncol=length(tornadoes),nrow=12, byrow = TRUE))/12
+tornadoestimeseries <- ts(tornadoes12, frequency=12)
+tornadoestimeseries
+tornadoestimeseriescomponents <- decompose(tornadoestimeseries)
+plot(tornadoestimeseriescomponents)
+```
+
+
+```{r}
+acf(data$revenue)
+acf(data$adClicks)
+acf(data$adCost)
+install.packages("astsa")
+library(forecast)
+library(astsa)
+seasonplot(data$revenue)
+seasonplot(cmort)
+
+
+fit1 <- StructTS(data$revenue[1:20], type = "BSM")
+seasonal_decomp_death <- stl(data$revenue[700:1000])
+as.integer(1.1)
+data = data %>% mutate(revenue  = ifelse(revenue > 1800, revenue - 1000, revenue))
+plot.ts(data$revenue[1:100])
+plot.ts(data$revenue[101:200])
+plot.ts(data$revenue[700:1000])
+abline(h = 1800, col="red")
+
+acf(diff(data$revenue, 7))
+pacf(diff(data$revenue, 7))
+data$revenue[800:1050]
+adf.test(data$revenue[800:1050], alternative = "stationary")
+acf.exp(data$revenue[800:1050], lag.max = 50, main="Sample ACF with Original Time Series") # MV(2)
+
+tsData = ts["2017"]
+
+testD = data.frame(rev=tsData, date= .index(tsData))
+
+ddd = testD %>% group_by(date) %>% mutate(cumRev = cumsum(rev))
+plot.ts(ddd$rev[1:200])
+
+
+ss = as.matrix(tsData[,1])
+acf(ss)
+plot.ts(ss)
+plot.ts(data$revenue[800:1050])
+stl(data$revenue[400:600], s.window = "periodic")
+auto.arima(data$revenue[400:700],D=1)
+
+```
+
 

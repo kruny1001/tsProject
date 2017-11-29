@@ -39,7 +39,7 @@ Order <- setRefClass("Order",
   )  
 )
 
-
+library(padr)
 orderData <- read.csv("./orders-2017-11-19-2.csv")
 nrow(orderData)
 length(colnames(orderData))
@@ -47,8 +47,8 @@ colnames(orderData) <- c("orderId", "status", "date", "time", "total",
   "custID", "prodDetail", "tranID")
 orderData$date = gsub("/","-", orderData$date)
 orderData$date = as.Date(orderData$date, "%m-%d-%Y")
-normOrder <- orderData %>% mutate(dateAll = paste(date, time, sep=" "))
-normOrder$dateAll = as.POSIXlt.character(normOrder$dateAll)
+normOrder <- orderData %>% mutate(dateAll = date)
+normOrder$dateAll = as.POSIXlt(normOrder$dateAll)
 
 library(xts)
 library(lubridate)
