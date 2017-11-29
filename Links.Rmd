@@ -1,0 +1,15 @@
+---
+title: "links"
+author: "Eun Woo Son"
+date: "11/28/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+https://www.r-bloggers.com/ensemble-learning-for-time-series-forecasting-in-r/
+https://www.quora.com/What-are-some-time-series-classification-methods
+http://www.simafore.com/blog/bid/205420/Time-series-forecasting-understanding-trend-and-seasonality

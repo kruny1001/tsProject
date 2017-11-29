@@ -1,0 +1,233 @@
+---
+title: "day"
+author: "Eun Woo Son"
+date: "11/28/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## http://www.business-science.io/code-tools/2017/10/26/demo_week_tibbletime.html
+https://earlconf.com/downloads/sanfrancisco/presentations/earl2017_-_new_tools_for_performing_financial_and_time_series_analysis_-_matt_dancho.pdf
+
+```{r}
+install.packages("tidyquant")
+install.packages("cranlogs")
+library(tidyquant)
+library(tsfeatures)
+library(tidyverse)
+library(forecast)
+```
+
+
+
+```{r}
+library(tidyquant)  # Loads tidyverse, tidquant, financial pkgs, xts/zoo
+library(cranlogs)   # For inspecting package downloads over time
+
+pkgs <- c("tidyr", "lubridate", "dplyr", 
+    "broom", "tidyquant", "ggplot2", "purrr", 
+    "stringr", "knitr")
+
+tidyverse_downloads <- cran_downloads(
+    packages = pkgs, 
+    from     = "2017-01-01", 
+    to       = "2017-06-30") %>%
+    tibble::as_tibble() %>%
+    group_by(package)
+
+tidyverse_downloads
+```
+
+```{r fig.width=10}
+# Visualize the package downloads
+tidyverse_downloads %>%
+    ggplot(aes(x = date, y = count, color = package)) +
+    geom_point() +
+    geom_line() + 
+    labs(title = "tidyverse packages: Daily downloads", x = "") +
+    facet_wrap(~ package, ncol = 3, scale = "free_y") +
+    scale_color_tq() +
+    theme_tq() +
+    theme(legend.position="none")
+```
+
+
+```{r fig.width=10}
+
+data2016 = ts["2016/2017"]
+date = index(data2016)
+hour = .indexhour(data2016)
+day = .indexwday(data2016)
+revenue = data2016[,1]
+newData = data.frame(date, hour, revenue, day)
+
+newData_w = newData %>%
+    tq_transmute(
+        select     = revenue,
+        mutate_fun = apply.weekly, 
+        FUN        = mean,
+        na.rm      = TRUE,
+        col_rename = "mean_count"
+    )
+
+newData_w %>% ggplot(aes(x = date, y = mean_count, color = day)) +
+    geom_point() +
+    geom_smooth(method = "loess") + 
+    labs(title = "tidyverse packages: Average daily downloads by week", x = "", 
+         y = "Mean Daily Downloads by Week") +
+    facet_wrap(~ day, ncol = 3, scale = "free_y") +
+    expand_limits(y = 0) + 
+    # scale_color_tq() +
+    theme_tq() +
+    theme(legend.position="none")
+
+
+newData %>%
+    ggplot(aes(x = day, y = revenue, color=day)) +
+    geom_point() +
+    geom_line() + 
+    labs(title = "tidyverse packages: Daily downloads", x = "") +
+    facet_wrap(~ hour, ncol = 2, scale = "free_y") +
+    # scale_color_tq() +
+    theme_tq() +
+    theme(legend.position="none")
+```
+
+
+```{r}
+library(devtools)
+# install_github("rga", "skardhamar")
+library(rga)
+rga.open(instance="ga", where="ga.rga1")
+```
+
+```{r}
+start_date <- "2014-05-01"
+end_date <- "2017-11-28"
+metrics <- "ga:users,ga:adClicks,ga:adCost,ga:daysSinceLastSession"
+dimensions = "ga:userGender,ga:userAgeBracket"
+sort <- "ga:date"
+src <- ga$getData(
+    "ga:24319051",
+    dimensions= dimensions,
+    start.date = start_date,
+    end.date = end_date,
+    metrics = metrics,
+    sort = "",
+    batch = TRUE
+)
+
+sessionInfo.2015 = ga$getData(id="ga:24319051",
+  start.date = "2015-01-01", 
+  end.date = "2015-12-31",
+  batch = TRUE,
+  sort = "ga:date",
+  dimensions = "ga:date", 
+  metrics = "ga:users,ga:sessions,ga:adClicks,ga:adCost"
+)
+
+nrow(sessionInfo.2015)
+
+sessionInfo.2016 = ga$getData(id="ga:24319051",
+  start.date = "2016-01-01", 
+  end.date = "2016-12-31",
+  batch = TRUE,
+  sort = "ga:date",
+  dimensions = "ga:date", 
+  metrics = "ga:users,ga:sessions,ga:adClicks,ga:adCost"
+)
+
+nrow(sessionInfo.2016)
+
+sessionInfo.2017 = ga$getData(id="ga:24319051",
+  start.date = "2017-01-01", 
+  end.date = "2017-11-19",
+  batch = TRUE,
+  sort = "ga:date",
+  dimensions = "ga:date", 
+  metrics = "ga:users,ga:sessions,ga:adClicks,ga:adCost"
+)
+
+nrow(sessionInfo.2017)
+
+sessionInfo.2017$sessions - sessionInfo.2017$adClicks
+totalClick = sum(sessionInfo.2017$adClicks)
+totalCost = sum(sessionInfo.2017$adCost)
+totalCost/totalClick
+
+analytics = data.frame(
+  date = src$date,
+  users = src$users,
+  adClicks = src$adClicks,
+  adCost = src$adCost
+  # timeOnScreen = src$timeOnScreen,
+  # goalConversionRateAll =  src$goalConversionRateAll
+)
+```
+
+
+```{r}
+tail(ts["2015-12-24"])
+ep.2015 <- endpoints(ts["2015"],'days')
+daymeans.2015 <- period.apply(ts["2015"], INDEX=ep.2015, FUN=sum, na.rm=TRUE)
+tail(daymeans.2015)
+
+
+ep.2016 <- endpoints(ts["2016"],'days')
+daymeans.2016 <- period.apply(ts["2016"], INDEX=ep.2016, FUN=sum, na.rm=F)
+nrow(daymeans.2016)
+
+ep.2017 <- endpoints(ts["2017-01-01/2017"],'days')
+daymeans.2017 <- period.apply(ts["2017-01-01/2017"], INDEX=ep.2017, FUN=sum, na.rm=F)
+nrow(daymeans.2017)
+```
+
+
+```{r}
+
+xts.2015 <- xts(x = sessionInfo.2015, order.by = sessionInfo.2015$date)
+merged.2015 = merge(xts.2015, daymeans.2015,join = "inner")
+nrow(merged.2015)
+tail(merged.2015)
+
+xts.2016 <- xts(x = sessionInfo.2016, order.by = sessionInfo.2016$date)
+merged.2016 = merge(xts.2016, daymeans.2016,join = "inner")
+
+
+sessionInfo.2015$revenue = daymeans.2015
+sessionInfo.2015$wday = .indexwday(daymeans.2015) 
+sessionInfo.2016$revenue = daymeans.2016
+sessionInfo.2016$wday = .indexwday(daymeans.2016) 
+sessionInfo.2017$revenue = daymeans.2017
+sessionInfo.2017$wday = .indexwday(daymeans.2017) 
+
+
+par(mfrow=c(2,2)) 
+plot.ts(sessionInfo.2015$revenue)
+plot.ts(sessionInfo.2015$adCost)
+plot.ts(sessionInfo.2015$adClicks)
+plot.ts(sessionInfo.2015$sessions)
+
+
+par(mfrow=c(3,1)) 
+plot.ts(sessionInfo.2017$revenue)
+plot.ts(sessionInfo.2017$adCost)
+plot.ts(sessionInfo.2017$adClicks)
+plot.ts(sessionInfo.2017$sessions)
+
+# Dicrect Visitor 
+plot(sessionInfo.2017$sessions- sessionInfo.2017$adClicks)
+
+```
+
+
+```{r, fit.width=10}
+par(mfrow=c(2,2)) 
+plot.ts(analytics$users, cex=.6, main="users")
+plot.ts(analytics$adClicks, cex=.6)
+plot.ts(analytics$adCost, cex=.6)
+```
+

@@ -293,9 +293,6 @@ nrow(final)
 completeData <- data %>% filter(users > 0)
 completeData <- data %>% filter(users > 0)
 
-
-
-
 plot.ts(completeData$goalConversionRateAll)
 ```
 

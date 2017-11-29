@@ -96,4 +96,39 @@ Changes not staged for commit:
 
 	[31mmodified:   .Rproj.user/574E333C/console06/EE9FD9E0[m
 
-]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationlizabeth-pc:Presentation kruny1001$ git add .[K[Alizabeth-pc:Presentation krruny1001$ git push origin[K[Alizabeth-pc:Presentation krunyy1001$ git push origin[K[Alizabeth-pc:Presentation kruny1001$ git push origin[Klizabeth-pc:Presentation kruny1001$ git push origin[Klizabeth-pc:Presentation kruny1001$ ggit push origin
+bash: Support: command not found
+]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentation[?1034hkevins-MacBook-Pro:Presentation krunyy1001$ [K[Akevins-MacBook-Pro:Presentation kruny1001$ R
+WARNING: ignoring environment value of R_HOME
+
+R version 3.4.2 (2017-09-28) -- "Short Summer"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[1mWarning:[0m[1m namespace ‘rga’ is not available and has been replaced
+by .GlobalEnv when processing object ‘ga’
+[0m[1m[Previously saved workspace restored]
+
+[0m[?1034h> [K> open .
+[1mError: unexpected symbol in "open ."
+[0m> a
+[1mError: object 'a' not found
+[0m> exit()
+[1mError in exit() : could not find function "exit"
+[0m> q()
+Save workspace image? [y/n/c]: n
+]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationkevins-MacBook-Pro:Presentation kruny1001$ open .
+]0;~/Documents/iCollections/School/School/2017 Fall/STAT560/Presentationkevins-MacBook-Pro:Presentation kruny1001$ 
